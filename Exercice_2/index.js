@@ -5,9 +5,9 @@ const app = express()
 const port = 3000
 const mongoURI = 'mongodb+srv://adrien:bob@cluster0.c3bofco.mongodb.net/index'
 
-// Options pour la connexion
+// Options for connection
 
-// Se connecter à la base de données
+// Connect to the database
 mongoose.connect(mongoURI)
 
 const productSchema = new mongoose.Schema({
@@ -23,72 +23,72 @@ const productSchema = new mongoose.Schema({
     },
 })
 
-// Définition du modèle de product à partir du schéma
+// Definition of the product model from the diagram
 const Product = mongoose.model('Product', productSchema)
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-    // Route pour créer un nouveau product
+    // Route to create a new product
 app.post('/products', (req, res) => {
     const { name, price } = req.body
 
-    // Validation des données
+    // Data validation
     if (!name || !price) {
-        return res.status(400).json({ message: 'Nom et prix sont requis' })
+        return res.status(400).json({ message: 'Name and price are required' })
     }
 
-    // Création d'un nouvel objet product
+    // Creation of a new product object
     const nouveauproduct = new Product({ name, price })
 
-    // Sauvegarde du product dans la base de données
+    // Product backup in the database
     nouveauproduct
         .save()
         .then(() => {
             res.status(201).json(nouveauproduct)
         })
         .catch((err) => {
-            res.status(500).json({ message: 'Erreur lors de la création du product', error: err })
+            res.status(500).json({ message: 'Error when creating the product', error: err })
         })
 })
 
-// Route pour récupérer tous les products
+// Route to retrieve all products
 app.get('/products', (req, res) => {
     Product.find()
         .then((products) => {
             res.status(200).json(products)
         })
         .catch((err) => {
-            res.status(500).json({ message: 'Erreur lors de la récupération des products', error: err })
+            res.status(500).json({ message: 'Error while retrieving products', error: err })
         })
 })
 
-// Route pour récupérer un product par son ID
+// Route to retrieve a product by its ID
 app.get('/products/:id', (req, res) => {
     const { id } = req.params
 
     Product.findById(id)
         .then((product) => {
             if (!product) {
-                return res.status(404).json({ message: 'product non trouvé' })
+                return res.status(404).json({ message: 'product not found' })
             }
             res.status(200).json(product)
         })
         .catch((err) => {
-            res.status(500).json({ message: 'Erreur lors de la récupération du product', error: err })
+            res.status(500).json({ message: 'Error while retrieving product', error: err })
         })
 })
 
-// Route pour mettre à jour un product par son ID
+// Route to update a product by its ID
 app.put('/products/:id', (req, res) => {
         const { id } = req.params
-        const { nom, prix } = req.body
+        const { name, price } = req.body
 
-        // Validation des données
-        if (!nom || !prix) {
-            return res.status(400).json({ message: 'Nom et prix sont requis' })
+        // Data validation
+        if (!name || !price) {
+            return res.status(400).json({ message: 'Name and price are required' })
         }
 
-        Product.findByIdAndUpdate(id, { nom, prix }, { new: true })
+        Product.findByIdAndUpdate(id, { name, price }, { new: true })
             .then((product) => {
                 if (!product) {
                     return res.status(404)
@@ -96,22 +96,22 @@ app.put('/products/:id', (req, res) => {
                 return res.status(200).json({ product })
             })
             .catch((err) => {
-                res.status(500).json({ message: 'Erreur lors de la mise à jour du product', error: err })
+                res.status(500).json({ message: 'Error while updating the product', error: err })
             })
     })
-    // Route pour supprimer un product par son ID
+    // Route to delete a product by its ID
 app.delete('/products/:id', (req, res) => {
     const { id } = req.params
 
     Product.findByIdAndRemove(id)
         .then((product) => {
             if (!product) {
-                return res.status(404).json({ message: 'product non trouvé' })
+                return res.status(404).json({ message: 'product not found' })
             }
-            res.status(200).json({ message: 'product supprimé avec succès' })
+            res.status(200).json({ message: 'product deleted successfully' })
         })
         .catch((err) => {
-            res.status(500).json({ message: 'Erreur lors de la suppression du product', error: err })
+            res.status(500).json({ message: 'Error while deleting the product', error: err })
         })
 })
 
